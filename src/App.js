@@ -7,17 +7,7 @@ import axios from "axios";
 function App() {
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get("https://swapi.dev/api/people")
-      .then((response) => {
-        setData(response.data.results);
-        console.log(response.data.results);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+
   
 
 return (
