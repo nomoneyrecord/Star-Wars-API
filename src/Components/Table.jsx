@@ -1,7 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
 
 function Table() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get('https://swapi.dev/api/people')
+      .then(response => {
+        setData(response.data.results);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
   return (
     <div className="container">
       <div className="row mb-3">
@@ -29,18 +43,19 @@ function Table() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
+            {data.map(person => (
+              <tr key={person.name}>
+                <td>{person.name}</td>
+                <td>{person.birth_year}</td>
+                <td>{person.height}</td>
+                <td>{person.mass}</td>
+                <td>{person.homeworld}</td>
+                <td>{person.species}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
-
     </div>
   );
 }
