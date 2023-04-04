@@ -10,7 +10,7 @@ function Table() {
       const response = await axios.get("https://swapi.dev/api/people");
       const results = response.data.results;
 
-      // Make an additional API call for each person to get homeworld and species data
+  
       const dataWithDetails = await Promise.all(
         results.map(async (person) => {
           const homeworldResponse = await axios.get(person.homeworld);
@@ -20,15 +20,14 @@ function Table() {
           if (person.species.length > 0) {
             const speciesResponse = await axios.get(person.species[0]);
             species = speciesResponse.data.name;
+          } else {
+            species = "Human";
           }
 
-          const speciesUrl = person.species.length > 0 ? person.species[0] : '';
           return {
             ...person,
             homeworld,
             species,
-            homeworldUrl: homeworldResponse.data.url,
-            speciesUrl,
           };
         })
       );
