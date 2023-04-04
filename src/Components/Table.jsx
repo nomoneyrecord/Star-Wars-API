@@ -6,25 +6,46 @@ function Table() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios
-      .get('https://swapi.dev/api/people')
-      .then(response => {
-        setData(response.data.results);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    async function fetchData() {
+      const response = await axios.get("https://swapi.dev/api/people");
+      const results = response.data.results;
+
+      // Make an additional API call for each person to get homeworld and species data
+      const dataWithDetails = await Promise.all(
+        results.map(async (person) => {
+          const homeworldResponse = await axios.get(person.homeworld);
+          const homeworld = homeworldResponse.data.name;
+
+          let species = "Unknown";
+          if (person.species.length > 0) {
+            const speciesResponse = await axios.get(person.species[0]);
+            species = speciesResponse.data.name;
+          }
+
+          const speciesUrl = person.species.length > 0 ? person.species[0] : '';
+          return {
+            ...person,
+            homeworld,
+            species,
+            homeworldUrl: homeworldResponse.data.url,
+            speciesUrl,
+          };
+        })
+      );
+
+      setData(dataWithDetails);
+    }
+
+    fetchData().catch((error) => {
+      console.error(error);
+    });
   }, []);
 
   return (
     <div className="container">
       <div className="row mb-3">
         <div className="col">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Text"
-          />
+          <input type="text" className="form-control" placeholder="Enter Text" />
         </div>
         <div className="col-auto">
           <button className="btn btn-primary">Search</button>
@@ -43,7 +64,7 @@ function Table() {
             </tr>
           </thead>
           <tbody>
-            {data.map(person => (
+            {data.map((person) => (
               <tr key={person.name}>
                 <td>{person.name}</td>
                 <td>{person.birth_year}</td>
