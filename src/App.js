@@ -3,6 +3,7 @@ import "./App.css";
 import Header from "./Components/Header";
 import Table from "./Components/Table";
 import axios from "axios";
+import ReactPaginate from "react-paginate";
 
 function App() {
   const [data, setData] = useState([]);

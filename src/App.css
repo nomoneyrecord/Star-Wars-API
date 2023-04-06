@@ -5,6 +5,7 @@
 div .App {
   background-color: #242424;
 }
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,9 +14,7 @@ div .App {
   color-scheme: light dark;
   color: rgba(152, 149, 149, 0.87);
   background-color: #242424;
-
 }
-
 
 h1 {
   font-size: 3.2em;
@@ -30,19 +29,75 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
+  color: #fff;
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
+  background-color: #2d2d2d;
   border-color: #ff0505;
   border-width: 1px;
 }
+
 button:focus,
 button:focus-visible {
   outline: 300px auto -webkit-focus-ring-color;
   border-color: aqua;
 }
 
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.pagination li {
+  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.pagination li a {
+  background-color: #979090;
+  color: rgb(36, 34, 34);
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.active a {
+  background-color: #007bff;
+}
+
+.pagination a:hover {
+  background-color: #861c1c;
+  border-color: #ff2b2b;
+  border-width: 1px;
+}
+
+.table-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.table-container table {
+  margin: 0 auto;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
 
 

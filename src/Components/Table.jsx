@@ -1,9 +1,27 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import ReactPaginate from "react-paginate";
 
 function Table() {
   const [data, setData] = useState([]);
+  const [pageNumber, setPagenumber] = useState(0);
+
+  const itemsPerPage = 10;
+  const pageCount = 9;
+
+  const displayChar = data
+    .slice(pageNumber * itemsPerPage, (pageNumber + 1) * itemsPerPage)
+    .map((person) => (
+      <tr key={person.name}>
+        <td>{person.name}</td>
+        <td>{person.birth_year}</td>
+        <td>{person.height}</td>
+        <td>{person.mass}</td>
+        <td>{person.homeworld}</td>
+        <td>{person.species}</td>
+      </tr>
+    ));
 
   useEffect(() => {
     async function fetchData() {
@@ -21,7 +39,7 @@ function Table() {
             species = speciesResponse.data.name;
           }
 
-          const speciesUrl = person.species.length > 0 ? person.species[0] : '';
+          const speciesUrl = person.species.length > 0 ? person.species[0] : "";
           return {
             ...person,
             homeworld,
@@ -44,37 +62,51 @@ function Table() {
     <div className="container">
       <div className="row mb-3">
         <div className="col">
-          <input type="text" className="form-control" placeholder="Enter Text" />
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter Text"
+          />
         </div>
         <div className="col-auto">
           <button className="btn btn-primary">Search</button>
         </div>
       </div>
       <div className="table-responsive">
-        <table className="table table-striped table-hover table-dark table-bordered">
-          <thead className="thead-dark">
-            <tr>
-              <th>Name</th>
-              <th>Birth Date</th>
-              <th>Height</th>
-              <th>Mass</th>
-              <th>Homeworld</th>
-              <th>Species</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((person) => (
-              <tr key={person.name}>
-                <td>{person.name}</td>
-                <td>{person.birth_year}</td>
-                <td>{person.height}</td>
-                <td>{person.mass}</td>
-                <td>{person.homeworld}</td>
-                <td>{person.species}</td>
+        <div className="table-container">
+          <table className="table table-striped table-hover table-dark table-bordered">
+            <thead className="thead-dark">
+              <tr>
+                <th>Name</th>
+                <th>Birth Date</th>
+                <th>Height</th>
+                <th>Mass</th>
+                <th>Homeworld</th>
+                <th>Species</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>{displayChar}</tbody>
+          </table>
+        </div>
+        <div className="table-footer">
+          
+          <p>
+            Showing {pageNumber * itemsPerPage + 1} to{" "}
+            {Math.min((pageNumber + 1) * itemsPerPage, data.length)} of{" "}
+            {data.length} characters
+          </p>
+          
+          <ReactPaginate
+            pageCount={pageCount}
+            pageRangeDisplayed={5}
+            marginPagesDisplayed={2}
+            onPageChange={(selected) => {
+              setPagenumber(selected.selected);
+            }}
+            containerClassName={"pagination"}
+            activeClassName={"active"}
+          />
+        </div>
       </div>
     </div>
   );
