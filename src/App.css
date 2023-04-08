@@ -46,8 +46,20 @@ button:focus-visible {
   border-color: aqua;
 }
 
+.table-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.table-container table {
+  margin: 0 auto;
+}
+
 .table-footer {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
@@ -66,10 +78,12 @@ button:focus-visible {
 }
 
 .pagination li a {
-  background-color: #979090;
-  color: rgb(36, 34, 34);
+  background-color: #726a6a;
+  color: rgb(3, 255, 74);
   padding: 5px;
   border-radius: 5px;
+  font-weight: 800; 
+ 
 }
 
 .active a {
@@ -77,27 +91,11 @@ button:focus-visible {
 }
 
 .pagination a:hover {
-  background-color: #861c1c;
-  border-color: #ff2b2b;
-  border-width: 1px;
+  background-color: #ee0909;
+  border-color: #ffbaba;
+  border-width: 4px;
 }
 
-.table-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.table-footer p {
+  margin-bottom: 0;
 }
-
-.table-container table {
-  margin: 0 auto;
-}
-
-.table-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-}
-
-

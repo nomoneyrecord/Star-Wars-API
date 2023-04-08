@@ -25,7 +25,9 @@ function Table() {
 
   useEffect(() => {
     async function fetchData() {
-      const response = await axios.get("https://swapi.dev/api/people");
+      const response = await axios.get(
+        `https://swapi.dev/api/people/?page=${pageNumber + 1}`
+      );
       const results = response.data.results;
 
       const dataWithDetails = await Promise.all(
@@ -56,7 +58,8 @@ function Table() {
     fetchData().catch((error) => {
       console.error(error);
     });
-  }, []);
+  }, [pageNumber]);
+
 
   return (
     <div className="container">
@@ -89,13 +92,11 @@ function Table() {
           </table>
         </div>
         <div className="table-footer">
-          
           <p>
             Showing {pageNumber * itemsPerPage + 1} to{" "}
             {Math.min((pageNumber + 1) * itemsPerPage, data.length)} of{" "}
             {data.length} characters
           </p>
-          
           <ReactPaginate
             pageCount={pageCount}
             pageRangeDisplayed={5}
