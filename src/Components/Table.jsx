@@ -5,7 +5,7 @@ import ReactPaginate from "react-paginate";
 
 function Table() {
   const [data, setData] = useState([]);
-  const [pageNumber, setPagenumber] = useState(0);
+  const [pageNumber, setPageNumber] = useState(0);
 
   const itemsPerPage = 10;
   const pageCount = 9;
@@ -60,6 +60,10 @@ function Table() {
     });
   }, [pageNumber]);
 
+  const handlePageClick = (data) => {
+    const selected = data.selected;
+    setPageNumber(selected);
+  };
 
   return (
     <div className="container">
@@ -101,9 +105,7 @@ function Table() {
             pageCount={pageCount}
             pageRangeDisplayed={5}
             marginPagesDisplayed={2}
-            onPageChange={(selected) => {
-              setPagenumber(selected.selected);
-            }}
+            onPageChange={handlePageClick}
             containerClassName={"pagination"}
             activeClassName={"active"}
           />
