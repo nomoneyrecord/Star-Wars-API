@@ -5,13 +5,13 @@ import ReactPaginate from "react-paginate";
 
 function Table() {
   const [data, setData] = useState([]);
-  const [pageNumber, setPageNumber] = useState(0);
+  const [pageNumber, setPagenumber] = useState(1);
 
   const itemsPerPage = 10;
   const pageCount = 9;
 
   const displayChar = data
-    .slice(pageNumber * itemsPerPage, (pageNumber + 1) * itemsPerPage)
+    //.slice(pageNumber * itemsPerPage, (pageNumber + 1) * itemsPerPage)
     .map((person) => (
       <tr key={person.name}>
         <td>{person.name}</td>
@@ -26,7 +26,7 @@ function Table() {
   useEffect(() => {
     async function fetchData() {
       const response = await axios.get(
-        `https://swapi.dev/api/people/?page=${pageNumber + 1}`
+        `https://swapi.dev/api/people/?page=${pageNumber}`
       );
       const results = response.data.results;
 
@@ -60,10 +60,9 @@ function Table() {
     });
   }, [pageNumber]);
 
-  const handlePageClick = (data) => {
-    const selected = data.selected;
-    setPageNumber(selected);
-  };
+  console.log(data);
+  console.log(displayChar);
+
 
   return (
     <div className="container">
@@ -103,9 +102,13 @@ function Table() {
           </p>
           <ReactPaginate
             pageCount={pageCount}
-            pageRangeDisplayed={5}
-            marginPagesDisplayed={2}
-            onPageChange={handlePageClick}
+            //pageRangeDisplayed={5}
+            // //marginPagesDisplayed={2}
+            onPageChange={(selected) => {
+              console.log(selected);
+              setPagenumber(selected.selected + 1);
+            }}
+            
             containerClassName={"pagination"}
             activeClassName={"active"}
           />
