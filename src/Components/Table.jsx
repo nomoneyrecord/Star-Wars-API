@@ -11,7 +11,7 @@ function Table() {
   const pageCount = 9;
 
   const displayChar = data
-    //.slice(pageNumber * itemsPerPage, (pageNumber + 1) * itemsPerPage)
+
     .map((person) => (
       <tr key={person.name}>
         <td>{person.name}</td>
@@ -102,8 +102,6 @@ function Table() {
           </p>
           <ReactPaginate
             pageCount={pageCount}
-            //pageRangeDisplayed={5}
-            // //marginPagesDisplayed={2}
             onPageChange={(selected) => {
               console.log(selected);
               setPagenumber(selected.selected + 1);
