@@ -10,18 +10,16 @@ function Table() {
   const itemsPerPage = 10;
   const pageCount = 9;
 
-  const displayChar = data
-
-    .map((person) => (
-      <tr key={person.name}>
-        <td>{person.name}</td>
-        <td>{person.birth_year}</td>
-        <td>{person.height}</td>
-        <td>{person.mass}</td>
-        <td>{person.homeworld}</td>
-        <td>{person.species}</td>
-      </tr>
-    ));
+  const displayChar = data.map((person) => (
+    <tr key={person.name}>
+      <td>{person.name}</td>
+      <td>{person.birth_year}</td>
+      <td>{person.height}</td>
+      <td>{person.mass}</td>
+      <td>{person.homeworld}</td>
+      <td>{person.species}</td>
+    </tr>
+  ));
 
   useEffect(() => {
     async function fetchData() {
@@ -63,7 +61,6 @@ function Table() {
   console.log(data);
   console.log(displayChar);
 
-
   return (
     <div className="container">
       <div className="row mb-3">
@@ -103,10 +100,8 @@ function Table() {
           <ReactPaginate
             pageCount={pageCount}
             onPageChange={(selected) => {
-              console.log(selected);
               setPagenumber(selected.selected + 1);
             }}
-            
             containerClassName={"pagination"}
             activeClassName={"active"}
           />
