@@ -6,6 +6,7 @@ import ReactPaginate from "react-paginate";
 function Table() {
   const [data, setData] = useState([]);
   const [pageNumber, setPagenumber] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
 
   const itemsPerPage = 10;
   const pageCount = 9;
@@ -58,8 +59,7 @@ function Table() {
     });
   }, [pageNumber]);
 
-  console.log(data);
-  console.log(displayChar);
+
 
   return (
     <div className="container">
