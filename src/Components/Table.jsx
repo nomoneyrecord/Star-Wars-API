@@ -6,7 +6,8 @@ import ReactPaginate from "react-paginate";
 function Table() {
   const [data, setData] = useState([]);
   const [pageNumber, setPagenumber] = useState(1);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(null);
+  const [searchBar, setSearchBar] = useState(null)
 
   const itemsPerPage = 10;
   const pageCount = 9;
@@ -22,42 +23,63 @@ function Table() {
     </tr>
   ));
 
-  useEffect(() => {
-    async function fetchData() {
-      const response = await axios.get(
-        `https://swapi.dev/api/people/?page=${pageNumber}`
-      );
-      const results = response.data.results;
 
-      const dataWithDetails = await Promise.all(
-        results.map(async (person) => {
-          const homeworldResponse = await axios.get(person.homeworld);
-          const homeworld = homeworldResponse.data.name;
-
-          let species = "Human";
-          if (person.species.length > 0) {
-            const speciesResponse = await axios.get(person.species[0]);
-            species = speciesResponse.data.name;
-          }
-
-          const speciesUrl = person.species.length > 0 ? person.species[0] : "";
-          return {
+  const processChar = async (person) => {
+    const homeworld = await retrieveName(person.homeworld)
+    const species = person.species.length > 0 
+            ? await retrieveName(person.species[0])
+            : "Human";
+    return {
             ...person,
             homeworld,
-            species,
-            homeworldUrl: homeworldResponse.data.url,
-            speciesUrl,
+            species
           };
-        })
-      );
+  }
 
-      setData(dataWithDetails);
+  const retrieveName = async (url) => {
+    const response = await axios.get(url);
+    return response.data.name;
+  }
+
+  const fetchByPage = async (page) => {
+  const response = await axios.get(
+    `https://swapi.dev/api/people/?page=${page}`
+  );
+    return response.data.results;
+  }
+
+  const fetchBySearch = async (search) => {
+    const response = await axios.get(
+      `https://swapi.dev/api/people/?search=${search}`
+
+      );
+      return response.data.results;
+    }
+
+  const handleSearchClick = () => {
+    setSearchValue(searchBar); 
+    setSearchBar(null)
+  }
+
+  useEffect(() => {
+    
+    async function fetchData() {
+    
+      let characters
+      if (searchValue === null) characters = await fetchByPage(pageNumber)
+      if (searchValue !== null) characters = await fetchBySearch(searchValue)
+      
+      // const characters = await fetchByPage(pageNumber)
+      const charactersWithDetails = await Promise.all(
+        characters.map(char => processChar(char))
+      );
+      setData(charactersWithDetails);
     }
 
     fetchData().catch((error) => {
       console.error(error);
     });
-  }, [pageNumber]);
+  }, [pageNumber, searchValue]);
 
 
 
