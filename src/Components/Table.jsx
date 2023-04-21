@@ -7,7 +7,7 @@ function Table() {
   const [data, setData] = useState([]);
   const [pageNumber, setPagenumber] = useState(1);
   const [searchValue, setSearchValue] = useState(null);
-  const [searchBar, setSearchBar] = useState(null)
+  const [searchBar, setSearchBar] = useState(null);
 
   const itemsPerPage = 10;
   const pageCount = 9;
@@ -23,44 +23,50 @@ function Table() {
     </tr>
   ));
 
-
   const processChar = async (person) => {
-    const homeworld = await retrieveName(person.homeworld)
-    const species = person.species.length > 0 
-            ? await retrieveName(person.species[0])
-            : "Human";
+    const homeworld = await retrieveName(person.homeworld);
+    const species =
+      person.species.length > 0
+        ? await retrieveName(person.species[0])
+        : "Human";
     return {
-            ...person,
-            homeworld,
-            species
-          };
-  }
+      ...person,
+      homeworld,
+      species,
+    };
+  };
 
   const retrieveName = async (url) => {
     const response = await axios.get(url);
     return response.data.name;
-  }
+  };
 
   const fetchByPage = async (page) => {
-  const response = await axios.get(
-    `https://swapi.dev/api/people/?page=${page}`
-  );
-    return response.data.results;
-  }
-
-  const fetchBySearch = async (search) => {
     const response = await axios.get(
-      `https://swapi.dev/api/people/?search=${search}`
+      `https://swapi.dev/api/people/?page=${page}`
+    );
+    const pageCount = Math.ceil(response.data.count / 10);
+    const adjustedPage = Math.min(page, pageCount);
+    const adjustedResponse = await axios.get(
+      `https://swapi.dev/api/people/?page=${adjustedPage}`
+    );
+    return adjustedResponse.data.results;
+  };
 
-      );
-      return response.data.results;
-    }
+  const fetchBySearch = async (search, page) => {
+    const response = await axios.get(
+      `https://swapi.dev/api/people/?search=${search}&page=${page}`
+    );
+    return response.data.results;
+  };
+  
 
-    const handleSearchClick = () => {
-      setSearchValue(searchBar);
-      setSearchBar("");
-    console.log(handleSearchClick);
-  }
+  const handleSearchClick = () => {
+    setSearchValue(searchBar);
+    setPagenumber(1);
+    setSearchBar("");
+  };
+  
 
   useEffect(() => {
     async function fetchData() {
@@ -68,36 +74,47 @@ function Table() {
       if (searchValue === null) {
         characters = await fetchByPage(pageNumber);
       } else {
-        characters = await fetchBySearch(searchValue);
+        characters = await fetchBySearch(searchValue, pageNumber);
       }
       const charactersWithDetails = await Promise.all(
         characters.map((char) => processChar(char))
       );
       setData(charactersWithDetails);
     }
-    
     fetchData().catch((error) => {
       console.error(error);
     });
   }, [pageNumber, searchValue]);
   
-
-
+  const handlePageChange = async (selected) => {
+    const newPageNumber = selected.selected + 1;
+    setPagenumber(newPageNumber);
+    let characters = await fetchByPage(newPageNumber);
+    if (searchValue !== null) {
+      characters = await fetchBySearch(searchValue, newPageNumber);
+    }
+    const charactersWithDetails = await Promise.all(
+      characters.map((char) => processChar(char))
+    );
+    setData(charactersWithDetails);
+  };
 
   return (
     <div className="container">
       <div className="row mb-3">
         <div className="col">
-        <input
-  type="text"
-  className="form-control"
-  placeholder="Enter Text"
-  value={searchBar}
-  onChange={(e) => setSearchBar(e.target.value)}
-/>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter Text"
+            value={searchBar}
+            onChange={(e) => setSearchBar(e.target.value)}
+          />
         </div>
         <div className="col-auto">
-          <button className="btn btn-primary" onClick={handleSearchClick}>Search</button>
+          <button className="btn btn-primary" onClick={handleSearchClick}>
+            Search
+          </button>
         </div>
       </div>
       <div className="table-responsive">
@@ -124,9 +141,7 @@ function Table() {
           </p>
           <ReactPaginate
             pageCount={pageCount}
-            onPageChange={(selected) => {
-              setPagenumber(selected.selected + 1);
-            }}
+            onPageChange={handlePageChange}
             containerClassName={"pagination"}
             activeClassName={"active"}
           />
