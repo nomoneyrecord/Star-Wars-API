@@ -7,10 +7,11 @@ function Table() {
   const [data, setData] = useState([]);
   const [pageNumber, setPagenumber] = useState(1);
   const [searchValue, setSearchValue] = useState(null);
-  const [searchBar, setSearchBar] = useState(null);
+  const [searchBar, setSearchBar] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
 
   const itemsPerPage = 10;
-  const pageCount = 9;
+  const pageCount = Math.ceil(totalCount / itemsPerPage);
 
   const displayChar = data.map((person) => (
     <tr key={person.name}>
@@ -45,110 +46,136 @@ function Table() {
     const response = await axios.get(
       `https://swapi.dev/api/people/?page=${page}`
     );
-    const pageCount = Math.ceil(response.data.count / 10);
-    const adjustedPage = Math.min(page, pageCount);
+    const totalCount = response.data.count;
+    const adjustedPage = Math.min(page, Math.ceil(totalCount / itemsPerPage));
     const adjustedResponse = await axios.get(
       `https://swapi.dev/api/people/?page=${adjustedPage}`
     );
-    return adjustedResponse.data.results;
+    return {
+      totalCount,
+      results: adjustedResponse.data.results,
+    };
   };
 
   const fetchBySearch = async (search, page) => {
     const response = await axios.get(
       `https://swapi.dev/api/people/?search=${search}&page=${page}`
     );
-    return response.data.results;
+    return {
+      totalCount: response.data.count,
+      results: response.data.results,
+    };
   };
-  
 
   const handleSearchClick = () => {
     setSearchValue(searchBar);
     setPagenumber(1);
-    setSearchBar("");
+    // Update searchBar state to keep search text in input field
+    setSearchBar(prevSearchBar => prevSearchBar);
   };
-  
 
   useEffect(() => {
     async function fetchData() {
       let characters;
+      let totalCount;
       if (searchValue === null) {
-        characters = await fetchByPage(pageNumber);
+        const response = await fetchByPage(pageNumber);
+        characters = response.results;
+        totalCount = response.totalCount;
       } else {
-        characters = await fetchBySearch(searchValue, pageNumber);
+        const response = await fetchBySearch(searchValue, pageNumber);
+        characters = response.results;
+        totalCount = response.totalCount;
       }
       const charactersWithDetails = await Promise.all(
         characters.map((char) => processChar(char))
       );
       setData(charactersWithDetails);
+      setTotalCount(totalCount);
     }
     fetchData().catch((error) => {
       console.error(error);
     });
   }, [pageNumber, searchValue]);
-  
+
+  useEffect(() => {
+    if (searchBar === "" && searchValue !== null) {
+      setSearchValue(null);
+      setPagenumber(1);
+    }
+  }, [searchBar, searchValue]);
+
   const handlePageChange = async (selected) => {
     const newPageNumber = selected.selected + 1;
     setPagenumber(newPageNumber);
-    let characters = await fetchByPage(newPageNumber);
-    if (searchValue !== null) {
-      characters = await fetchBySearch(searchValue, newPageNumber);
+    let characters;
+    let totalCount;
+    if (searchValue === null) {
+    const response = await fetchByPage(newPageNumber);
+    characters = response.results;
+    totalCount = response.totalCount;
+    } else {
+    const response = await fetchBySearch(searchValue, newPageNumber);
+    characters = response.results;
+    totalCount = response.totalCount;
     }
     const charactersWithDetails = await Promise.all(
-      characters.map((char) => processChar(char))
+    characters.map((char) => processChar(char))
     );
     setData(charactersWithDetails);
-  };
-
-  return (
+    setTotalCount(totalCount);
+    };
+    
+    return (
     <div className="container">
-      <div className="row mb-3">
-        <div className="col">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Text"
-            value={searchBar}
-            onChange={(e) => setSearchBar(e.target.value)}
-          />
-        </div>
-        <div className="col-auto">
-          <button className="btn btn-primary" onClick={handleSearchClick}>
-            Search
-          </button>
-        </div>
-      </div>
-      <div className="table-responsive">
-        <div className="table-container">
-          <table className="table table-striped table-hover table-dark table-bordered">
-            <thead className="thead-dark">
-              <tr>
-                <th>Name</th>
-                <th>Birth Date</th>
-                <th>Height</th>
-                <th>Mass</th>
-                <th>Homeworld</th>
-                <th>Species</th>
-              </tr>
-            </thead>
-            <tbody>{displayChar}</tbody>
-          </table>
-        </div>
-        <div className="table-footer">
-          <p>
-            Showing {pageNumber * itemsPerPage + 1} to{" "}
-            {Math.min((pageNumber + 1) * itemsPerPage, data.length)} of{" "}
-            {data.length} characters
-          </p>
-          <ReactPaginate
-            pageCount={pageCount}
-            onPageChange={handlePageChange}
-            containerClassName={"pagination"}
-            activeClassName={"active"}
-          />
-        </div>
-      </div>
+    <div className="row mb-3">
+    <div className="col">
+    <input
+    type="text"
+    className="form-control"
+    placeholder="Enter Text"
+    value={searchBar}
+    onChange={(e) => setSearchBar(e.target.value)}
+    />
     </div>
-  );
-}
-
-export default Table;
+    <div className="col-auto">
+    <button className="btn btn-primary" onClick={handleSearchClick}>
+    Search
+    </button>
+    </div>
+    </div>
+    <div className="table-responsive">
+    <div className="table-container">
+    <table className="table table-striped table-hover table-dark table-bordered">
+    <thead className="thead-dark">
+    <tr>
+    <th>Name</th>
+    <th>Birth Date</th>
+    <th>Height</th>
+    <th>Mass</th>
+    <th>Homeworld</th>
+    <th>Species</th>
+    </tr>
+    </thead>
+    <tbody>{displayChar}</tbody>
+    </table>
+    </div>
+    <div className="table-footer">
+    <p>
+    Showing {pageNumber * itemsPerPage + 1} to{" "}
+    {Math.min((pageNumber + 1) * itemsPerPage, totalCount)} of{" "}
+    {totalCount} characters
+    </p>
+    <ReactPaginate
+    pageCount={pageCount}
+    onPageChange={handlePageChange}
+    containerClassName={"pagination"}
+    activeClassName={"active"}
+    />
+    </div>
+    </div>
+    </div>
+    );
+    }
+    
+    export default Table;
