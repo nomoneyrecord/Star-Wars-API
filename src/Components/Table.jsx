@@ -56,30 +56,31 @@ function Table() {
       return response.data.results;
     }
 
-  const handleSearchClick = () => {
-    setSearchValue(searchBar); 
-    setSearchBar(null)
+    const handleSearchClick = () => {
+      setSearchValue(searchBar);
+      setSearchBar("");
+    console.log(handleSearchClick);
   }
 
   useEffect(() => {
-    
     async function fetchData() {
-    
-      let characters
-      if (searchValue === null) characters = await fetchByPage(pageNumber)
-      if (searchValue !== null) characters = await fetchBySearch(searchValue)
-      
-      // const characters = await fetchByPage(pageNumber)
+      let characters;
+      if (searchValue === null) {
+        characters = await fetchByPage(pageNumber);
+      } else {
+        characters = await fetchBySearch(searchValue);
+      }
       const charactersWithDetails = await Promise.all(
-        characters.map(char => processChar(char))
+        characters.map((char) => processChar(char))
       );
       setData(charactersWithDetails);
     }
-
+    
     fetchData().catch((error) => {
       console.error(error);
     });
   }, [pageNumber, searchValue]);
+  
 
 
 
@@ -87,14 +88,16 @@ function Table() {
     <div className="container">
       <div className="row mb-3">
         <div className="col">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Text"
-          />
+        <input
+  type="text"
+  className="form-control"
+  placeholder="Enter Text"
+  value={searchBar}
+  onChange={(e) => setSearchBar(e.target.value)}
+/>
         </div>
         <div className="col-auto">
-          <button className="btn btn-primary">Search</button>
+          <button className="btn btn-primary" onClick={handleSearchClick}>Search</button>
         </div>
       </div>
       <div className="table-responsive">
