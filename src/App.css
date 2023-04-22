@@ -1,24 +1,33 @@
+html {
+  background-image: url('./images/Star-wars.jpeg');
+  background-size: 100%; 
+  background-position: cover;
+
+}
+
+@font-face {
+  font-family: 'Star Wars';
+  src: url('fonts/Star Wars.ttf') format('truetype');
+}
+
+div.App {
+  background-image: url('./images/Stars.jpeg');
+}
 .App {
   text-align: center;
 }
 
-div .App {
-  background-color: #242424;
-}
-
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
-
+  font-weight: 200;
   color-scheme: light dark;
   color: rgba(152, 149, 149, 0.87);
-  background-color: #242424;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  font-family: 'Star Wars';
 }
 
 button {
@@ -28,14 +37,14 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+ 
   color: #fff;
   cursor: pointer;
   transition: border-color 0.25s;
 }
 
 button:hover {
-  background-color: #2d2d2d;
+ 
   border-color: #ff0505;
   border-width: 1px;
 }
@@ -51,6 +60,8 @@ button:focus-visible {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .table-container table {
@@ -63,12 +74,16 @@ button:focus-visible {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .pagination {
   display: flex;
   justify-content: center;
   margin-top: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .pagination li {
@@ -79,7 +94,7 @@ button:focus-visible {
 
 .pagination li a {
   background-color: #726a6a;
-  color: rgb(3, 255, 74);
+  color: rgb(239, 201, 45);
   padding: 5px;
   border-radius: 5px;
   font-weight: 800; 
@@ -87,7 +102,7 @@ button:focus-visible {
 }
 
 .active a {
-  background-color: #007bff;
+  
 }
 
 .pagination a:hover {
@@ -98,4 +113,8 @@ button:focus-visible {
 
 .table-footer p {
   margin-bottom: 0;
+}
+
+p {
+  color: rgb(239, 201, 45);
 }
